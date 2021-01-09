@@ -41,6 +41,7 @@ class StockKData(BaseModel):
     trade_status = peewee.BooleanField()
     pct_chg = peewee.FloatField()
     pe_ttm = peewee.FloatField()
+    pe_ttm_inc = peewee.FloatField()
 
     class Meta:
         table_name = "t_stock_k_data"
@@ -53,3 +54,5 @@ def init_tables():
 
     StockIndustry.create_table(fail_silently=True)
     StockKData.create_table(fail_silently=True)
+    StockIndustry.truncate_table()
+    StockKData.truncate_table()

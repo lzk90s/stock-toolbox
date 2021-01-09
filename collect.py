@@ -1,9 +1,9 @@
-import json
+import datetime
 
 import baostock as bs
 import pandas as pd
+
 import db
-import datetime
 
 
 class StockHelper:
@@ -70,7 +70,14 @@ def get_latest_n_day_stock_k_data(stock_code, n_days):
     if not k_data:
         return []
 
+    tmp_pe_ttm = 0
     for idx, day in k_data["date"].items():
+        pe_ttm = float(k_data["peTTM"][idx])
+        if tmp_pe_ttm == 0:
+            tmp_pe_ttm = pe_ttm
+        # 统计周期内的pe ttm增量
+        pe_ttm_inc = pe_ttm - tmp_pe_ttm
+
         data = {
             "date": day,
             "code": k_data["code"][idx],
@@ -85,7 +92,8 @@ def get_latest_n_day_stock_k_data(stock_code, n_days):
             "turn": k_data["turn"][idx],
             "trade_status": k_data["tradestatus"][idx],
             "pct_chg": k_data["pctChg"][idx],
-            "pe_ttm": k_data["peTTM"][idx]
+            "pe_ttm": k_data["peTTM"][idx],
+            "pe_ttm_inc": pe_ttm_inc
         }
 
         db.StockKData.insert(data).on_conflict_replace().execute()
@@ -102,7 +110,6 @@ def collect_stock_data(n_days=7):
     for s in stock_list:
         idx = idx + 1
         get_latest_n_day_stock_k_data(s.code, n_days)
-
         print("[{}] stock = {}, name = {}, industry = {}".format(idx, s.code, s.code_name, s.industry))
 
 
