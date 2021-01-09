@@ -1,0 +1,4 @@
+pandas==1.2.0
+baostock==0.8.8
+peewee==3.14.0
+pandas_profiling==2.10.0
